@@ -141,9 +141,6 @@ def df_to_pdf_table(df, title="OUT LET"):
     return elements
 
 # ---------- Streamlit App ----------
-st.set_page_config(page_title="💡💡 OUT LET Orders Processor", layout="wide")
-st.title("💡💡 OUT LET Orders Processor")
-st.markdown("....صبح ياهندسه.. ارفع الملفات علشان تستلم الشيت")
 
 uploaded_files = st.file_uploader(
     "Upload Excel files (.xlsx)",
@@ -213,6 +210,7 @@ if uploaded_files:
             file_name=file_name,
             mime="application/pdf"
         )
+
 
 
 
