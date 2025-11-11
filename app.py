@@ -203,13 +203,14 @@ if uploaded_files:
         today = datetime.datetime.now(tz).strftime("%Y-%m-%d")
         file_name = f"OUT LET - {today}.pdf"
 
-        st.success("✅تم تجهيز ملف PDF ✅")
+        st.success("ERROR❌")
         st.download_button(
-            label="⬇️⬇️ تحميل ملف PDF",
+            label="⚠️",
             data=buffer.getvalue(),
             file_name=file_name,
             mime="application/pdf"
         )
+
 
 
 
