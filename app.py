@@ -141,6 +141,10 @@ def df_to_pdf_table(df, title="OUT LET"):
     return elements
 
 # ---------- Streamlit App ----------
+st.set_page_config(page_title="✨🚀 OUT-LET Orders Processor", layout="wide")
+st.title("✨🚀 OUT-LET Orders Processor")
+st.markdown("...صباااح الفل ياهندسة ")
+
 
 uploaded_files = st.file_uploader(
     "Upload Excel files (.xlsx)",
@@ -203,13 +207,14 @@ if uploaded_files:
         today = datetime.datetime.now(tz).strftime("%Y-%m-%d")
         file_name = f"OUT LET - {today}.pdf"
 
-        st.success("ERROR❌")
+        st.success("✅تم تجهيز ملف PDF ✅")
         st.download_button(
-            label="⚠️",
+            label="⬇️⬇️ تحميل ملف PDF",
             data=buffer.getvalue(),
             file_name=file_name,
             mime="application/pdf"
         )
+
 
 
 
