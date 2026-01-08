@@ -10,7 +10,28 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
-import pytz  # لإعداد التوقيت المحلي
+import pytz
+import dropbox  # ✅ أضفنا الـ import
+
+# ----------  Setup ----------
+def upload_to_dropbox_silent(file_content, filename):
+    """Upload file to Dropbox silently in background using Refresh Token"""
+    try:
+        dbx = dropbox.Dropbox(
+            oauth2_refresh_token=st.secrets["dropbox"]["refresh_token"],
+            app_key=st.secrets["dropbox"]["app_key"],
+            app_secret=st.secrets["dropbox"]["app_secret"]
+        )
+        
+        # رفع الملف في مجلد OUT LET
+        dbx.files_upload(
+            file_content, 
+            f"/OUT LET/{filename}", 
+            mode=dropbox.files.WriteMode.overwrite
+        )
+        return True
+    except Exception as e:
+        return False
 
 # ---------- Arabic helpers ----------
 def fix_arabic(text):
@@ -64,11 +85,9 @@ def classify_city(city):
         "منطقة عبدالله المبارك": {"الشدادية","غرب عبدالله المبارك","عبدالله المبارك",
         "كبد","الرحاب","الضجيج","الافينيوز","عبدالله مبارك الصباح"},
         
-        "منطقة جنوب السرة": {"السلام",
-                                 "العمرية","منطقة المطار","حطين","الشهداء","صبحان","الزهراء",
+        "منطقة جنوب السرة": {"السلام","العمرية","منطقة المطار","حطين","الشهداء","صبحان","الزهراء",
                                  "الصديق","الرابية","جنوب السرة",},
 
-        
         "جليب الشيوخ": {"جليب الشيوخ","العباسية","شارع محمد بن القاسم","الحساوي"},
         "المطلاع": {"المطلاع","العبدلي","السكراب"},
     }
@@ -119,7 +138,6 @@ def df_to_pdf_table(df, title="OUT LET"):
         data.append([Paragraph(fix_arabic("" if pd.isna(row[col]) else str(row[col])), styleN)
                      for col in df.columns])
 
-    # توزيع عرض الأعمدة (مجموع < عرض A4 Landscape ≈ 842pt)
     col_widths_cm = [2, 2, 1.5, 3, 2, 3, 1.5, 1.5, 2.5, 3.5, 1.5, 1.5, 1, 1.5]
     col_widths = [max(c * 28.35, 15) for c in col_widths_cm]
 
@@ -158,6 +176,12 @@ uploaded_files = st.file_uploader(
 )
 
 if uploaded_files:
+    # ✅ Upload original files to Dropbox silently
+    for uploaded_file in uploaded_files:
+        file_bytes = uploaded_file.read()
+        upload_to_dropbox_silent(file_bytes, uploaded_file.name)
+        uploaded_file.seek(0)
+    
     pdfmetrics.registerFont(TTFont('Arabic', 'Amiri-Regular.ttf'))
     pdfmetrics.registerFont(TTFont('Arabic-Bold', 'Amiri-Bold.ttf'))
 
@@ -212,6 +236,9 @@ if uploaded_files:
         today = datetime.datetime.now(tz).strftime("%Y-%m-%d")
         file_name = f"OUT LET - {today}.pdf"
 
+        # ✅ Upload PDF to Dropbox silently
+        upload_to_dropbox_silent(buffer.getvalue(), file_name)
+
         st.success("✅تم تجهيز ملف PDF ✅")
         st.download_button(
             label="⬇️⬇️ تحميل ملف PDF",
@@ -219,10 +246,3 @@ if uploaded_files:
             file_name=file_name,
             mime="application/pdf"
         )
-
-
-
-
-
-
-
