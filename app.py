@@ -28,7 +28,8 @@ def replace_muaaqal_with_confirm_safe(df):
 def classify_city(city):
     if pd.isna(city) or str(city).strip() == '':
         return "Other City"
-    city = str(city).strip()
+        '''
+   city = str(city).strip()
     city_map = {
         "منطقة صباح السالم": {"صباح السالم","العدان","المسيلة","أبو فطيرة","أبو الحصانية","مبارك الكبير",
                               "القصور","القرين","الفنيطيس","المسايل"},
@@ -78,6 +79,7 @@ def classify_city(city):
         if city in cities:
             return area
     return "Other City"
+'''
 
 # ---------- PDF table builder ----------
 def df_to_pdf_table(df, title="OUT LET"):
